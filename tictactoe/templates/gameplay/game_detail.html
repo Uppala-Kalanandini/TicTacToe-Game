@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {{ game }}
+{% endblock title %}
+
+{% block styling %}
+    {{ block.super }}
+<style type="text/css" xmlns="http://www.w3.org/1999/html">
+        .tictactoe-table {
+            width: 300px;
+            border-width: 2px;
+        }
+
+        .tictactoe-cell {
+            background-color: #debb27;
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            vertical-align: middle !important;
+            font-size: 60px;
+        }
+    </style>
+{% endblock styling %}
+
+{% block content %}
+
+
+        {% if game.status == 'F' %}
+            <div class="alert alert-info">
+                <strong>{{ game.first_player }}</strong> to play!
+            </div>
+        {% elif game.status == 'S' %}
+            <div class="alert alert-info">
+                <strong>{{ game.second_player }}</strong> to play!
+            </div>
+        {% elif game.status == 'W' %}
+            <div class="alert alert-success">
+                <strong>{{ game.first_player }}</strong> won!
+            </div>
+        {% elif game.status == 'L' %}
+            <div class="alert alert-success">
+                <strong>{{ game.first_player }}</strong> won!
+            </div>
+        {% elif game.status == 'D' %}
+            <div class="alert alert-warning">
+                It's a draw!
+            </div>
+        {% endif %}
+<div class="col-md-6" align="center">
+        <table class="table table-bordered tictactoe-table" >
+            {% for row in game.board %}
+                <tr>
+                    {% for move in row %}
+                        <td class="tictactoe-cell">
+                            {% if move %}
+                                {% if move.by_first_player %}
+                                    X
+                                {% else %}
+                                    O
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+       <p class="badge" ><strong>X - </strong>{{ game.first_player.username }}</p>
+        <p class="badge"><strong>O - </strong>{{ game.second_player.username }}</p>
+    </div>
+    {% if form %}
+        <div class="col-md-6">
+            <h3>It's your move</h3>
+            <form method="post"
+                  action=" {% url 'gameplay_make_move' game.id %}">
+                {{ form | crispy }}
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-primary">Make move</button>
+            </form>
+        </div>
+    {% endif %}
+{% endblock content %}
